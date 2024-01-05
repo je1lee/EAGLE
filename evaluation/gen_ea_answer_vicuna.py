@@ -66,7 +66,6 @@ def ea_forward(input_ids, model, tokenizer, tree_choices, logits_processor=None,
             tree_logits,
             tree_buffers["tree_indices"],
             tree_buffers["retrieve_indices"],
-            sample_token,
             logits_processor
         )
         logits, hidden_state_new, outputs = tree_decoding(
@@ -98,30 +97,6 @@ def ea_forward(input_ids, model, tokenizer, tree_choices, logits_processor=None,
             hidden_state_new,
             sample_p
         )
-        if tokenizer.eos_token_id in input_ids[0, input_len:].tolist():
-            break
-        if new_token > 1024:
-            break
-        if input_ids.shape[1] > 1960:
-            break
-    return input_ids, new_token, idx
-
-
-def run_eval(
-        base_model_path,
-        ea_model_path,
-        model_id,
-        question_file,
-        question_begin,
-        question_end,
-        answer_file,
-        max_new_token,
-        num_choices,
-        num_gpus_per_model,
-        num_gpus_total,
-        max_gpu_memory,
-        temperature,
-        tree_choices,
 ):
     questions = load_questions(question_file, question_begin, question_end)
     # random shuffle the questions to balance the loading
@@ -226,11 +201,6 @@ def get_model_answers(
 
             output_ids, new_token, idx = ea_forward(
                 torch.as_tensor(input_ids).cuda(),
-                model,
-                tokenizer,
-                tree_choices,
-                logits_processor,
-            )
             torch.cuda.synchronize()
             total_time = time.time() - start_time
             output_ids = output_ids[0][len(input_ids[0]):]

@@ -452,6 +452,7 @@ def len_list(x,n):
     return [i for i in x if len(i)<=n]
 
 class Model(nn.Module):
+<<<<<<< HEAD
     def __init__(self,config,load_emb=False,path=None):
         super().__init__()
 
@@ -459,6 +460,11 @@ class Model(nn.Module):
 
 
         self.gradient_checkpointing = True
+=======
+    def __init__(self,config,load_emb=False,path=None, load_weight=True):
+        super().__init__()
+        self.gradient_checkpointing = False
+>>>>>>> 2e661b5 (add: temp)
         self.padding_idx = config.pad_token_id
         self.vocab_size = config.vocab_size
 

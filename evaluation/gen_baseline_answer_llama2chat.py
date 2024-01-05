@@ -3,10 +3,12 @@
 Usage:
 python3 gen_model_answer.py --model-path lmsys/fastchat-t5-3b-v1.0 --model-id fastchat-t5-3b-v1.0
 """
+import sys
 import argparse
 import json
 import os
 
+sys.path.append('/home/jewon/code/FASTLLM/EAGLE')
 #os.environ["CUDA_VISIBLE_DEVICES"] = "0,1,2,3,4,5,6,7"
 import time
 import shortuuid
@@ -35,8 +37,6 @@ def ea_forward(input_ids, model, tokenizer, tree_choices, logits_processor=None,
         tree_buffers = generate_tree_buffers(
             tree_choices, device=model.base_model.model.layers[-1].self_attn.q_proj.weight.device
         )
-        tree_buffers["retrieve_indices_head"] = tree_buffers["retrieve_indices"].to(
-            model.base_model.lm_head.weight.device)
     model.tree_buffers = tree_buffers
     model.tree_choices = tree_choices
 
@@ -64,13 +64,8 @@ def ea_forward(input_ids, model, tokenizer, tree_choices, logits_processor=None,
     new_token = 0
 
     for idx in range(max_steps):
-        if logits_processor is not None:
-            logits = outputs.logits[:, -1]
-            logits = logits_processor(None, logits)
-            probabilities = torch.nn.functional.softmax(logits, dim=-1)
-            input_id = torch.multinomial(probabilities, 1)
-        else:
-            input_id = outputs.logits[:, -1:].argmax(dim=-1)
+
+        input_id = outputs.logits[:, -1:].argmax(dim=-1)
         outputs = model.base_model(input_id, use_cache=True, past_key_values=past_key_values)
         input_ids = torch.cat([input_ids, input_id], dim=-1)
 

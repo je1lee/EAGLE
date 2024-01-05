@@ -23,7 +23,6 @@ def truncate_list(lst, num):
 
 
 
-
 def find_list_markers(text):
 
     pattern = re.compile(r'(?m)(^\d+\.\s|\n)')

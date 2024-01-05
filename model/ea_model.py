@@ -97,6 +97,7 @@ class EaModel(nn.Module):
             cls,
             base_model_path=None,
             ea_model_path=None,
+            is_safetensors=True,
             **kwargs,
     ):
 
@@ -112,12 +113,20 @@ class EaModel(nn.Module):
             base_model_path,
             configpath
         )
-        load_model_path=os.path.join(ea_model_path, "pytorch_model.bin")
-        if not os.path.exists(load_model_path):
-            load_model_path=hf_hub_download(ea_model_path, "pytorch_model.bin")
-        ea_layer_state_dict = torch.load(load_model_path,
-                                         map_location=base_model.device)
-        model.ea_layer.load_state_dict(ea_layer_state_dict, strict=True)
+        if is_safetensors:
+            load_model_path = os.path.join(ea_model_path, "model.safetensors")
+            import safetensors
+            safetensors.torch.load_model(model.ea_layer, load_model_path)
+        else:
+            load_model_path=os.path.join(ea_model_path, "pytorch_model.bin")
+
+            if not os.path.exists(load_model_path):
+                load_model_path=hf_hub_download(ea_model_path, "pytorch_model.bin")
+                
+            ea_layer_state_dict = torch.load(load_model_path,
+                                             map_location=base_model.device)
+            model.ea_layer.load_state_dict(ea_layer_state_dict, strict=False)
+
 
         return model
 

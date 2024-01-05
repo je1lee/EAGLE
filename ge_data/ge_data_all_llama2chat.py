@@ -19,7 +19,7 @@ from datasets import load_dataset
 import json
 from fastchat.model.model_adapter import get_conversation_template
 
-bigname="/home/hongyanz/scratch/weights/llama2chat/13B"
+bigname="/ssd0/data/fast-llm/Llama-2-70B-Chat-fp16"
 # bigname = "/home/lyh/weights/hf/llama/7B/"
 # smallname = "/home/lyh/weights/hf/llama/7B/"
 
@@ -43,7 +43,7 @@ def build_dataset_rank(
         tokenizer, split="train",
         select=None,
 ):
-    ds = load_dataset('json', data_files="/home/hongyanz/scratch/data/ShareGPT_V4.3_unfiltered_cleaned_split.json")
+    ds = load_dataset("json", data_files="/ssd0/data/fast-llm/ShareGPT_Vicuna_unfiltered/ShareGPT_V4.3_unfiltered_cleaned_split.json")
     ds = ds['train']
     ds = ds.shuffle(seed=42)
     ds1 = ds.select(range(args.start, args.end))
@@ -61,7 +61,7 @@ def build_dataset_rank(
             "loss_mask": []
         }
         for i in range(len(examples['id'])):
-            conv = get_conversation_template("llama-2-chat")
+            conv = get_conversation_template("llama-2")
             sys_p="You are a helpful, respectful and honest assistant. Always answer as helpfully as possible, while being safe.  Your answers should not include any harmful, unethical, racist, sexist, toxic, dangerous, or illegal content. Please ensure that your responses are socially unbiased and positive in nature.\n\nIf a question does not make any sense, or is not factually coherent, explain why instead of answering something not correct. If you don't know the answer to a question, please don't share false information."
             conv.system_message=sys_p
             roles = {"human": conv.roles[0], "gpt": conv.roles[1]}
@@ -77,10 +77,6 @@ def build_dataset_rank(
                     sentence["value"]=" "+sentence["value"]
                 conv.append_message(role, sentence["value"])
             conversation=conv.get_prompt()
-            # if i==56:
-            #     print(i)
-            # if i==57:
-            #     print(i)
             if not tokenizer.pad_token_id:
                 tokenizer.pad_token_id=tokenizer.unk_token_id
 
@@ -91,7 +87,6 @@ def build_dataset_rank(
                 truncation=True,
             ).input_ids[0]
             loss_mask=torch.ones_like(input_ids)
-            #print(i)
 
             sep = conv.sep + conv.roles[1] + " "
 
@@ -130,7 +125,7 @@ def build_dataset_rank(
             loss_mask[cur_len:] = 0
 
 
-
+            # print(conversation)
             new_examples["conversation"].append(conversation)
             new_examples["input_ids"].append(input_ids[None,:])
             new_examples["loss_mask"].append(loss_mask[None,:])

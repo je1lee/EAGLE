@@ -46,19 +46,26 @@ EAGLE (Extrapolation Algorithm for Greater Language-model Efficiency) is a new b
 
 _Inference is conducted on RTX 3090 GPUs at fp16 precision using the Vicuna 33B model. For an enhanced viewing experience, the animation has been sped up fourfold._
 
+<<<<<<< HEAD
 ## Todo
 - [x] Support non-greedy inference (provably maintaining text distribution).
 - [ ] Support bs > 1.
 - [ ] Support vLLM.
 - [ ] Support more LLMs such as Mixtral 8x7B.
 
+=======
+>>>>>>> 2e661b5 (add: temp)
 ## Contents
 
 - [Setup & Installation](#setup--installation)
 - [EAGLE Weights](#eagle-weights)
 - [Inference](#inference)
   - [With UI](#with-ui)
+<<<<<<< HEAD
   - [With Code](#with-code)
+=======
+  - [With code](#with-code)
+>>>>>>> 2e661b5 (add: temp)
 - [Train](#train)
   - [Generate Train Data](#generate-train-data)
   - [Train the Auto-regression Head](#train-the-auto-regression-head)
@@ -89,7 +96,11 @@ python -m application.webui --ea-model-path [path of EAGLE weight]\
 		--base-model-path [path of the original model]\
 		--model-type [vicuna or llama-2-chat]
 ```
+<<<<<<< HEAD
 ### With Code
+=======
+### With code
+>>>>>>> 2e661b5 (add: temp)
 You can use our provided "eagenerate" for speedup generation just like using 'generate' from Hugging Face. Here is an example.
 ```python
 from model.ea_model import EaModel
